@@ -1,5 +1,6 @@
 package controllers;
 
+import exceptions.InvalidVote;
 import service.Baloot;
 import model.Comment;
 import exceptions.NotExistentComment;
@@ -24,6 +25,8 @@ public class CommentController {
             return new ResponseEntity<>("The comment was successfully liked!", HttpStatus.OK);
         } catch (NotExistentComment e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        }catch (InvalidVote e){
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -37,6 +40,9 @@ public class CommentController {
             return new ResponseEntity<>("The comment was successfully disliked!", HttpStatus.OK);
         } catch (NotExistentComment e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
+        } catch (InvalidVote e)
+        {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
     }
