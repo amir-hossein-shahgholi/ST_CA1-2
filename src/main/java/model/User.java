@@ -1,6 +1,7 @@
 package model;
 
 import exceptions.CommodityIsNotInBuyList;
+import exceptions.InvalidQuantityRange;
 import exceptions.InsufficientCredit;
 import exceptions.InvalidCreditRange;
 import lombok.Getter;
@@ -40,9 +41,11 @@ public class User {
         this.credit += amount;
     }
 
-    public void withdrawCredit(float amount) throws InsufficientCredit {
+    public void withdrawCredit(float amount) throws InsufficientCredit, InvalidCreditRange {
         if (amount > this.credit)
             throw new InsufficientCredit();
+        if (amount < 0)
+            throw new InvalidCreditRange();
 
         this.credit -= amount;
     }
@@ -56,7 +59,11 @@ public class User {
             this.buyList.put(id, 1);
     }
 
-    public void addPurchasedItem(String id, int quantity) {
+    public void addPurchasedItem(String id, int quantity) throws InvalidQuantityRange {
+        if (quantity < 0){
+            throw new InvalidQuantityRange();
+        }
+
         if (this.purchasedList.containsKey(id)) {
             int existingQuantity = this.purchasedList.get(id);
             this.purchasedList.put(id, existingQuantity + quantity);
@@ -75,5 +82,4 @@ public class User {
         } else
             throw new CommodityIsNotInBuyList();
     }
-
 }

@@ -90,7 +90,7 @@ public class BuyListController {
             User user = Baloot.getInstance().getUserById(username);
             Baloot.getInstance().withdrawPayableAmount(user);
             return new ResponseEntity<>("buy list purchased successfully!", HttpStatus.OK);
-        } catch (InsufficientCredit | NotExistentUser | NotInStock e) {
+        } catch (InvalidQuantityRange | InvalidCreditRange | InsufficientCredit | NotExistentUser | NotInStock e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
     }

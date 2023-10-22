@@ -79,13 +79,13 @@ public class Baloot {
         return total;
     }
 
-    public void withdrawPayableAmount(User user) throws InsufficientCredit, NotInStock {
+    public void withdrawPayableAmount(User user) throws InsufficientCredit, NotInStock, InvalidCreditRange, InvalidQuantityRange {
         float amount = getCurrentBuyListPrice(user);
         user.withdrawCredit(amount);
 
         for (var entry : new ArrayList<>(user.getBuyList().entrySet())) {
-            user.addPurchasedItem(entry.getKey(), entry.getValue());
             try {
+                user.addPurchasedItem(entry.getKey(), entry.getValue());
                 Commodity commodity = getCommodityById(entry.getKey());
                 commodity.updateInStock(-entry.getValue());
             } catch (NotExistentCommodity ignored) {
