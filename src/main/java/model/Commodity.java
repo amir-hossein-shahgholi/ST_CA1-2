@@ -31,7 +31,7 @@ public class Commodity {
     }
 
     public void addRate(String username, int score) throws InvalidRateRange {
-        if (score < 0)
+        if (score < 0 || score > 10)
             throw new InvalidRateRange();
         userRate.put(username, score);
         this.calcRating();

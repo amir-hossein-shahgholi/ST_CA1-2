@@ -2,98 +2,69 @@ package model;
 
 import exceptions.InvalidRateRange;
 import exceptions.NotInStock;
-import org.junit.Before;
-import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CommodityTest {
     private Commodity commodity;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         commodity = new Commodity();
         commodity.setId("testId");
         commodity.setName("testName");
         commodity.setPrice(10000);
+    }
+    @AfterEach
+    public void tearDown() {
+        commodity = null;
+    }
+    @ParameterizedTest
+    @ValueSource(ints = { 50, -10, 0, -5  })
+    public void testUpdateInStockSuccessfully(int new_stock) throws NotInStock {
         commodity.setInStock(10);
-    }
-
-    @Test
-    public void testUpdateInStockSuccessfully() {
-        try {
-            int last_stock = commodity.getInStock();
-            commodity.updateInStock(50);
-            assertEquals(last_stock + 50, commodity.getInStock());
-        } catch (NotInStock e) {
-            fail("NotInStock exception should not be thrown for a positive stock update.");
-        }
-    }
-
-    @Test
-    public void testUpdateInStockToZeroSuccessfully() {
-        try {
-            int last_stock = commodity.getInStock();
-            commodity.updateInStock(last_stock*-1);
-            assertEquals(0, commodity.getInStock());
-        } catch (NotInStock e) {
-            fail("NotInStock exception should not be thrown for a positive stock update.");
-        }
+        commodity.updateInStock(new_stock);
+        assertEquals(10 + new_stock, commodity.getInStock());
     }
 
     @Test
     public void testUpdateInStockWithInvalidAmountShouldFail() {
-        try {
-            commodity.updateInStock(-100);
-            fail("NotInStock exception should be thrown for a negative stock update.");
-        } catch (NotInStock e) {
+        commodity.setInStock(10);
+        assertThrows(NotInStock.class, () -> commodity.updateInStock(-11));
+    }
 
-        }
+    @ParameterizedTest
+    @ValueSource(ints = { 0, 10, 4 })
+    public void testAddRateForAnUserSuccessfully(int rating) throws InvalidRateRange{
+        commodity.addRate("testUser1", rating);
+        assertEquals((float) rating / 2, commodity.getRating());
+        assertTrue(commodity.getUserRate().containsKey("testUser1"));
     }
 
     @Test
-    public void testAddRateForAnUserSuccessfully() {
-        try {
-            commodity.addRate("testUser1", 4);
-            assertEquals(2, commodity.getRating(), 0);
-            assertTrue(commodity.getUserRate().containsKey("testUser1"));
-        }catch (InvalidRateRange e){
-            fail("InvalidRateRange exception should not be thrown for a positive rate add.");
-        }
+    public void testAddRateWithExistingKeyShouldUpdateUserRateSuccessfully() throws InvalidRateRange{
+        commodity.addRate("testUser1", 4);
+        commodity.addRate("testUser1", 6);
+        assertEquals(3, commodity.getRating());
+        assertTrue(commodity.getUserRate().containsKey("testUser1"));
     }
 
-    @Test
-    public void testAddRateWithExistingKeyShouldUpdateUserRateSuccessfully() {
-        try {
-            commodity.addRate("testUser1", 4);
-            commodity.addRate("testUser1", 6);
-            assertEquals(3, commodity.getRating(), 0);
-            assertTrue(commodity.getUserRate().containsKey("testUser1"));
-        }catch (InvalidRateRange e) {
-            fail("InvalidRateRange exception should not be thrown for a positive rate add.");
-        }
+    @ParameterizedTest
+    @ValueSource(ints = { -1, 11 })
+    public void testInvalidRateRangeShouldFail(int rating) {
+        assertThrows(InvalidRateRange.class, () -> commodity.addRate("testUser1", rating));
     }
-
     @Test
-    public void testAddNegativeRateShouldFail() {
-        try{
-            commodity.addRate("testUser1", -4);
-        fail("InvalidRateRange exception should be thrown for negative credit.");
-        } catch (InvalidRateRange e) {
-        }
-    }
-
-    @Test
-    public void testCalcRatingShouldCalcRateSuccessfully() {
-        try {
-            commodity.addRate("testUser1", 1);
-            commodity.addRate("testUser2", 2);
-            commodity.addRate("testUser3", 3);
-            assertEquals(1.5, commodity.getRating(), 0);
-        }catch (InvalidRateRange e) {
-            fail("InvalidRateRange exception should not be thrown for a positive rate add.");
-        }
+    public void testAddMultipleUsersSuccessfully() throws InvalidRateRange{
+        commodity.addRate("testUser1", 1);
+        commodity.addRate("testUser2", 2);
+        commodity.addRate("testUser3", 3);
+        assertEquals(1.5, commodity.getRating());
     }
 }

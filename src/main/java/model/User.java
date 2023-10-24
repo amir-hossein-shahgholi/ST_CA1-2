@@ -63,7 +63,6 @@ public class User {
         if (quantity < 0){
             throw new InvalidQuantityRange();
         }
-
         if (this.purchasedList.containsKey(id)) {
             int existingQuantity = this.purchasedList.get(id);
             this.purchasedList.put(id, existingQuantity + quantity);

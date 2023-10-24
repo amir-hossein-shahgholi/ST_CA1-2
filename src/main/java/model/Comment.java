@@ -10,6 +10,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -43,7 +44,7 @@ public class Comment {
     }
 
     public void addUserVote(String userName, String vote) throws InvalidVote {
-        if ((vote != "like") && (vote !="dislike")){
+        if ((!Objects.equals(vote, "like")) && (!Objects.equals(vote, "dislike"))){
             throw new InvalidVote();
         }
         userVote.put(userName, vote);
