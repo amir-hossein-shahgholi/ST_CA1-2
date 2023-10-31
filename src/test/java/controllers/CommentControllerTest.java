@@ -1,4 +1,5 @@
 package controllers;
+import defines.Errors;
 import exceptions.InvalidVote;
 import exceptions.NotExistentComment;
 import model.Comment;
@@ -58,12 +59,12 @@ public class CommentControllerTest {
         Map<String, String> input = new HashMap<>();
         input.put("username", "testUser");
 
-        when(baloot.getCommentById(commentId)).thenThrow(NotExistentComment.class);
+        when(baloot.getCommentById(commentId)).thenThrow(new NotExistentComment());
 
         ResponseEntity<String> response = commentController.likeComment(String.valueOf(commentId), input);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        //assertEquals("Comment not found", response.getBody());
+        assertEquals(Errors.NOT_EXISTENT_COMMENT, response.getBody());
     }
 
     @Test
@@ -74,12 +75,12 @@ public class CommentControllerTest {
 
         when(baloot.getCommentById(commentId)).thenReturn(comment);
 
-        doThrow(InvalidVote.class).when(comment).addUserVote("testUser", "like");
+        doThrow(new InvalidVote()).when(comment).addUserVote("testUser", "like");
 
         ResponseEntity<String> response = commentController.likeComment(String.valueOf(commentId), input);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        //assertEquals("Invalid vote", response.getBody());
+        assertEquals(Errors.INVALID_VOTE_FORMAT, response.getBody());
 
     }
 
@@ -106,12 +107,12 @@ public class CommentControllerTest {
         Map<String, String> input = new HashMap<>();
         input.put("username", "testUser");
 
-        when(baloot.getCommentById(commentId)).thenThrow(NotExistentComment.class);
+        when(baloot.getCommentById(commentId)).thenThrow(new NotExistentComment());
 
         ResponseEntity<String> response = commentController.dislikeComment(String.valueOf(commentId), input);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        //assertEquals("Comment not found", response.getBody());
+        assertEquals(Errors.NOT_EXISTENT_COMMENT, response.getBody());
     }
 
     @Test
@@ -122,12 +123,12 @@ public class CommentControllerTest {
 
         when(baloot.getCommentById(commentId)).thenReturn(comment);
 
-        doThrow(InvalidVote.class).when(comment).addUserVote("testUser", "dislike");
+        doThrow(new InvalidVote()).when(comment).addUserVote("testUser", "dislike");
 
         ResponseEntity<String> response = commentController.dislikeComment(String.valueOf(commentId), input);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        //assertEquals("Invalid vote", response.getBody());
+        assertEquals(Errors.INVALID_VOTE_FORMAT, response.getBody());
     }
 
 }

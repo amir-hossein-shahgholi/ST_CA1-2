@@ -1,6 +1,7 @@
 package controllers;
 
 import controllers.AuthenticationController;
+import defines.Errors;
 import exceptions.IncorrectPassword;
 import exceptions.NotExistentUser;
 import exceptions.UsernameAlreadyTaken;
@@ -8,6 +9,9 @@ import model.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+
+import static defines.Errors.NOT_EXISTENT_USER;
+import static defines.Errors.USERNAME_ALREADY_TAKEN;
 import static org.mockito.Mockito.*;
 
 import org.mockito.MockitoAnnotations;
@@ -59,12 +63,12 @@ public class AuthenticationControllerTest {
         input.put("username", username);
         input.put("password", password);
 
-        doThrow(NotExistentUser.class).when(baloot).login(anyString(), anyString());
+        doThrow(new NotExistentUser()).when(baloot).login(anyString(), anyString());
 
         ResponseEntity<String> response = authenticationController.login(input);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        //assertEquals("User does not exist.", response.getBody());
+        assertEquals(Errors.NOT_EXISTENT_USER, response.getBody());
 
     }
     @Test
@@ -75,12 +79,12 @@ public class AuthenticationControllerTest {
         input.put("username", username);
         input.put("password", password);
 
-        doThrow(IncorrectPassword.class).when(baloot).login(anyString(), anyString());
+        doThrow(new IncorrectPassword()).when(baloot).login(anyString(), anyString());
 
         ResponseEntity<String> response = authenticationController.login(input);
 
         assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        //assertEquals("Incorrect password.", response.getBody());
+        assertEquals(Errors.INCORRECT_PASSWORD, response.getBody());
         }
     @Test
     public void testSignupSuccess() throws UsernameAlreadyTaken {
@@ -112,7 +116,7 @@ public class AuthenticationControllerTest {
         ResponseEntity<String> response = authenticationController.signup(input);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertEquals("The username is already taken.", response.getBody());
+        assertEquals(Errors.USERNAME_ALREADY_TAKEN, response.getBody());
     }
 }
 

@@ -1,4 +1,5 @@
 package controllers;
+import defines.Errors;
 import exceptions.InvalidRateRange;
 import exceptions.NotExistentCommodity;
 import exceptions.NotExistentUser;
@@ -20,6 +21,7 @@ import service.Baloot;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class CommoditiesControllerTest {
 
@@ -104,7 +106,7 @@ public class CommoditiesControllerTest {
 
     @Test
     public void testGetCommodityNotExistentCommodity() throws NotExistentCommodity {
-        when(baloot.getCommodityById(anyString())).thenThrow(NotExistentCommodity.class);
+        when(baloot.getCommodityById(anyString())).thenThrow(new NotExistentCommodity());
 
         ResponseEntity<Commodity> response = commoditiesController.getCommodity(commodity1.getId());
 
@@ -128,7 +130,7 @@ public class CommoditiesControllerTest {
         ResponseEntity<String> response = commoditiesController.rateCommodity(commodity1.getId(), input);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        //assertEquals("rate added successfully!", response.getBody());
+        assertEquals("rate added successfully!", response.getBody());
 
         verify(commodity).addRate(username, 5);
     }
@@ -141,12 +143,12 @@ public class CommoditiesControllerTest {
 
         Commodity commodity = mock(Commodity.class);
 
-        when(baloot.getCommodityById(anyString())).thenThrow(NotExistentCommodity.class);
+        when(baloot.getCommodityById(anyString())).thenThrow(new NotExistentCommodity());
 
         ResponseEntity<String> response = commoditiesController.rateCommodity(commodity1.getId(), input);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        //assertEquals("Commodity does not exist.", response.getBody());
+        assertEquals(Errors.NOT_EXISTENT_COMMODITY, response.getBody());
     }
 
     @Test
@@ -159,12 +161,12 @@ public class CommoditiesControllerTest {
         Commodity commodity = mock(Commodity.class);
 
         when(baloot.getCommodityById(anyString())).thenReturn(commodity);
-        doThrow(InvalidRateRange.class).when(commodity).addRate(anyString(), anyInt());
+        doThrow(new InvalidRateRange()).when(commodity).addRate(anyString(), anyInt());
 
         ResponseEntity<String> response = commoditiesController.rateCommodity("sample", input);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        //assertEquals("Rate value must be an integer between 1 and 10", response.getBody());
+        assertEquals(Errors.INVALID_RATE_RANGE, response.getBody());
     }
 
     @Test
@@ -215,7 +217,7 @@ public class CommoditiesControllerTest {
         input.put("comment", commentText);
 
         when(baloot.generateCommentId()).thenReturn(1);
-        when(baloot.getUserById(username)).thenThrow(NotExistentUser.class);
+        when(baloot.getUserById(username)).thenThrow(new NotExistentUser());
 
         ResponseEntity<String> response = commoditiesController.addCommodityComment(commodity1.getId(), input);
 
@@ -260,7 +262,7 @@ public class CommoditiesControllerTest {
         ResponseEntity<ArrayList<Comment>> response = commoditiesController.getCommodityComment(commodity1.getId());
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().isEmpty());
+        assertTrue(Objects.requireNonNull(response.getBody()).isEmpty());
     }
 
     @Test
@@ -382,7 +384,7 @@ public class CommoditiesControllerTest {
         ResponseEntity<ArrayList<Commodity>> response = commoditiesController.searchCommodities(input);
 
         assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertTrue(response.getBody().isEmpty());
+        assertTrue(Objects.requireNonNull(response.getBody()).isEmpty());
     }
 
     @Test
@@ -420,6 +422,6 @@ public class CommoditiesControllerTest {
         ResponseEntity<ArrayList<Commodity>> response = commoditiesController.getSuggestedCommodities(commodity1.getId());
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertTrue(response.getBody().isEmpty());
+        assertTrue(Objects.requireNonNull(response.getBody()).isEmpty());
     }
 }
