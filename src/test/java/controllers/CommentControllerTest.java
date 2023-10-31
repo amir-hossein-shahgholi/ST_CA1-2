@@ -82,6 +82,7 @@ public class CommentControllerTest {
         //assertEquals("Invalid vote", response.getBody());
 
     }
+
     @Test
     public void testDislikeCommentSuccess() throws NotExistentComment, InvalidVote {
         int commentId = 1;
