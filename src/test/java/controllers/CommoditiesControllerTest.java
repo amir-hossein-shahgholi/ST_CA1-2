@@ -141,8 +141,6 @@ public class CommoditiesControllerTest {
         input.put("username", "testUser");
         input.put("rate", "5");
 
-        Commodity commodity = mock(Commodity.class);
-
         when(baloot.getCommodityById(anyString())).thenThrow(new NotExistentCommodity());
 
         ResponseEntity<String> response = commoditiesController.rateCommodity(commodity1.getId(), input);
@@ -222,7 +220,7 @@ public class CommoditiesControllerTest {
         ResponseEntity<String> response = commoditiesController.addCommodityComment(commodity1.getId(), input);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
-        assertEquals("User not found.", response.getBody());
+        assertEquals(Errors.NOT_EXISTENT_USER, response.getBody());
     }
 
     @Test
