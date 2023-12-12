@@ -110,7 +110,7 @@ public class UserControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/users/{id}/credit", "Sample")
                         .content("{\"credit\": " + creditToAdd + "}")
                         .contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string(NOT_EXISTENT_USER))
+                .andExpect(MockMvcResultMatchers.content().string("Invalid"))
                 .andExpect(MockMvcResultMatchers.status().isNotFound());
     }
 
