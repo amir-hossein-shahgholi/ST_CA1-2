@@ -1,7 +1,0 @@
-controllers/CommentControllerTest.class
-controllers/CommoditiesControllerTest.class
-controllers/UserControllerTest.class
-model/CommodityTest.class
-model/UserTest.class
-controllers/AuthenticationControllerTest.class
-model/CommentTest.class
